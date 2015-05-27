@@ -19,12 +19,13 @@ void MyLabel::mouseMoveEvent(QMouseEvent *ev)
     QImage temp_Img = this->pixmap()->toImage();
     QColor c_pix(temp_Img.pixel(ev->pos()));
 
-    if(!LeptonThread::resultMutex)
-    {
-        frameBuffer = (uint16_t *)LeptonThread::result;
+    //frameBuffer = (uint16_t *) lepton_result;
+    LeptonThread* flir = new LeptonThread();
+    flir->get_result(frameBuffer);
 
-        int pix_temp = frameBuffer[ev->x()];
-    }
+    //int pix_temp = (int) frameBuffer[(ev->x())];
+    int pix_temp = 0;
+    qDebug() << "FrameBuffer[0]= " << frameBuffer[0];
 
     emit enviaLabel(QString::number(pix_temp));
 }

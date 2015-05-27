@@ -11,7 +11,7 @@
 #define FPS 27;
 
 #define min_temp 20
-#define max_temp 50
+#define max_temp 40
 
 LeptonThread::LeptonThread() : QThread()
 {
@@ -34,10 +34,8 @@ void LeptonThread::run()
 		int resets = 0;
 		for(int j=0;j<PACKETS_PER_FRAME;j++) {
 			//if it's a drop packet, reset j to 0, set to -1 so he'll be at 0 again loop
-            resultMutex = true;
-            read(spi_cs0_fd, result+sizeof(uint8_t)*PACKET_SIZE*j, sizeof(uint8_t)*PACKET_SIZE);
-			int packetNumber = result[j*PACKET_SIZE+1];
-            resultMutex = false;
+            read(spi_cs0_fd, lepton_result+sizeof(uint8_t)*PACKET_SIZE*j, sizeof(uint8_t)*PACKET_SIZE);
+            int packetNumber = lepton_result[j*PACKET_SIZE+1];
             if(packetNumber != j) {
 				j = -1;
 				resets += 1;
@@ -55,8 +53,7 @@ void LeptonThread::run()
 			qDebug() << "done reading, resets: " << resets;
 		}
 
-        resultMutex = true;
-        frameBuffer = (uint16_t *)result;
+        frameBuffer = (uint16_t *)lepton_result;
 		int row, column;
 		uint16_t value;
         uint16_t minValue = min_temp*40+7200;
@@ -72,9 +69,9 @@ void LeptonThread::run()
 			}
 			
 			//flip the MSB and LSB at the last second
-			int temp = result[i*2];
-			result[i*2] = result[i*2+1];
-			result[i*2+1] = temp;
+            int temp = lepton_result[i*2];
+            lepton_result[i*2] = lepton_result[i*2+1];
+            lepton_result[i*2+1] = temp;
 
 			value = frameBuffer[i];
 /*            if(value > maxValue) {
@@ -101,13 +98,12 @@ void LeptonThread::run()
 				continue;
 			}
 			value = (frameBuffer[i] - minValue) * scale;
-            const int *colormap = colormap_grayscale;
+            const int *colormap = colormap_truergb;
 			color = qRgb(colormap[3*value], colormap[3*value+1], colormap[3*value+2]);
 			column = (i % PACKET_SIZE_UINT16 ) - 2;
 			row = i / PACKET_SIZE_UINT16;
 			myImage.setPixel(column, row, color);
 		}
-        resultMutex = false;
         //lets emit the signal for update
 		emit updateImage(myImage);
 
@@ -124,4 +120,10 @@ void LeptonThread::performFFC() {
 
 void LeptonThread::salvaBMP() {
 
+}
+
+void LeptonThread::get_result(uint16_t* target_result)
+{
+    memcpy(target_result, frameBuffer, 1);
+    qDebug() << sizeof(lepton_result)/2;
 }

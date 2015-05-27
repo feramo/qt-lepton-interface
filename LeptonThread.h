@@ -22,10 +22,8 @@ public:
   LeptonThread();
   ~LeptonThread();
 
-  static uint8_t result[PACKET_SIZE*PACKETS_PER_FRAME];
-  static bool resultMutex = false;
-
   void run();
+  void get_result(uint16_t* target_result);
 
 public slots:
   void performFFC();
@@ -38,8 +36,8 @@ signals:
 private:
 
   QImage myImage;
-
-  uint16_t *frameBuffer;
+  uint16_t* frameBuffer;
+  uint8_t lepton_result[PACKET_SIZE*PACKETS_PER_FRAME];
 
 };
 

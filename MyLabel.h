@@ -11,6 +11,11 @@
 //this is because we can't pass a QPixmap from our thread
 //so we have to pass a QImage and turn the QImage into a QPixmap on our end
 
+#define PACKET_SIZE 164
+#define PACKET_SIZE_UINT16 (PACKET_SIZE/2)
+#define PACKETS_PER_FRAME 60
+#define FRAME_SIZE_UINT16 (PACKET_SIZE_UINT16*PACKETS_PER_FRAME)
+
 class MyLabel : public QLabel {
   Q_OBJECT;
 
