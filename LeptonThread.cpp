@@ -13,6 +13,16 @@
 #define min_temp 20
 #define max_temp 40
 
+LeptonThread* LeptonThread::m_pInstance = NULL;
+
+LeptonThread* LeptonThread::Instance()
+{
+    if (!m_pInstance)   // Only allow one instance of class to be generated.
+        m_pInstance = new LeptonThread;
+
+    return m_pInstance;
+}
+
 LeptonThread::LeptonThread() : QThread()
 {
 }
@@ -73,6 +83,8 @@ void LeptonThread::run()
             lepton_result[i*2] = lepton_result[i*2+1];
             lepton_result[i*2+1] = temp;
 
+            lepton_result_swapped[i] = frameBuffer[i];
+
 			value = frameBuffer[i];
 /*            if(value > maxValue) {
                 maxValue = value;
@@ -124,6 +136,5 @@ void LeptonThread::salvaBMP() {
 
 void LeptonThread::get_result(uint16_t* target_result)
 {
-    memcpy(target_result, frameBuffer, 1);
-    qDebug() << sizeof(lepton_result)/2;
+    memcpy(target_result, lepton_result_swapped, sizeof(lepton_result_swapped));
 }

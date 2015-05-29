@@ -31,7 +31,7 @@ class MyLabel : public QLabel {
     void enviaLabel(QString);
 
 private:
-  uint16_t *frameBuffer;
+  uint16_t frameBuffer[(PACKET_SIZE*PACKETS_PER_FRAME/2)];
 
 };
 

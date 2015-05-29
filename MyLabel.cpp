@@ -5,6 +5,7 @@
 #include <QString>
 #include <QPicture>
 #include <QColor>
+#include <QFileDialog>
 
 MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 {
@@ -20,12 +21,11 @@ void MyLabel::mouseMoveEvent(QMouseEvent *ev)
     QColor c_pix(temp_Img.pixel(ev->pos()));
 
     //frameBuffer = (uint16_t *) lepton_result;
-    LeptonThread* flir = new LeptonThread();
-    flir->get_result(frameBuffer);
+    LeptonThread::Instance()->get_result(frameBuffer);
+    int x_eq = (ev->x() * 80 / this->width());
+    int y_eq = (ev->y() * 60 / this->height());
 
-    //int pix_temp = (int) frameBuffer[(ev->x())];
-    int pix_temp = 0;
-    qDebug() << "FrameBuffer[0]= " << frameBuffer[0];
+    uint32_t pix_temp = (uint32_t) frameBuffer[x_eq + 2 + (y_eq * 82)];
 
     emit enviaLabel(QString::number(pix_temp));
 }
@@ -47,5 +47,5 @@ TempLabel::~TempLabel()
 
 void TempLabel::atualizaTemp(QString temp_str)
 {
-  this->setText(temp_str + "ADU");
+  this->setText("Temp: " + temp_str);
 }
