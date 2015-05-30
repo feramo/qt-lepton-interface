@@ -25,7 +25,6 @@ public:
 
 public slots:
   void performFFC();
-  void salvaBMP();
 
 signals:
   void updateText(QString);

@@ -66,7 +66,7 @@ int main( int argc, char **argv )
     QObject::connect(button1, SIGNAL(clicked()), thread, SLOT(performFFC()));
 
     //connect save button to the save action
-    QObject::connect(button2, SIGNAL(clicked()), thread, SLOT(performFFC()));
+    QObject::connect(button2, SIGNAL(clicked()), &myLabel, SLOT(salvaBMP()));
 
     thread->start();
 	

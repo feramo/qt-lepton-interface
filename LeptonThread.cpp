@@ -130,10 +130,6 @@ void LeptonThread::performFFC() {
 	lepton_perform_ffc();
 }
 
-void LeptonThread::salvaBMP() {
-
-}
-
 void LeptonThread::get_result(uint16_t* target_result)
 {
     memcpy(target_result, lepton_result_swapped, sizeof(lepton_result_swapped));

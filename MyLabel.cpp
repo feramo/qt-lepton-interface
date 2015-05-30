@@ -49,3 +49,13 @@ void TempLabel::atualizaTemp(QString temp_str)
 {
   this->setText("Temp: " + temp_str);
 }
+
+void MyLabel::salvaBMP()
+{
+    QString filename = QFileDialog::getSaveFileName(parentWidget(),tr("Salvar BMP"), "/boot/", "Imagem de bitmap (*.BMP)");
+    if(filename != "")
+    {
+        QImage temp_Img = this->pixmap()->toImage();
+        temp_Img.save(filename, "BMP", 100);
+    }
+}

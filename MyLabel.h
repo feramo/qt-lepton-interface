@@ -26,6 +26,7 @@ class MyLabel : public QLabel {
 
   public slots:
     void setImage(QImage);
+    void salvaBMP();
 
   signals:
     void enviaLabel(QString);
