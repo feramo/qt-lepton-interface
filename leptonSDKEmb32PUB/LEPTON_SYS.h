@@ -311,7 +311,7 @@ extern LEP_RESULT LEP_GetSysAuxTemperatureCelcius( LEP_CAMERA_PORT_DESC_T_PTR po
 extern LEP_RESULT LEP_GetSysFpaTemperatureCelcius( LEP_CAMERA_PORT_DESC_T_PTR portDescPtr,
                                                    LEP_SYS_FPA_TEMPERATURE_CELCIUS_T_PTR fpaTemperaturePtr );
 
-extern LEP_RESULT LEP_GetSysAuxTemperatureKelvin( LEP_CAMERA_PORT_DESC_T_PTR portDescPtr,
+extern LEP_RESULT LEP_GetSysAuxTemperatureKelvin( LEP_CAMERA_PORT_DESC_T_PTR portDescamTempcPtr,
                                                   LEP_SYS_AUX_TEMPERATURE_KELVIN_T_PTR auxTemperaturePtr );
 
 extern LEP_RESULT LEP_GetSysFpaTemperatureKelvin( LEP_CAMERA_PORT_DESC_T_PTR portDescPtr,

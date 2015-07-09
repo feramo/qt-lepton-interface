@@ -43,8 +43,22 @@ class TempLabel : public QLabel {
     TempLabel(QWidget *parent = 0);
     ~TempLabel();
 
+public slots:
+    void updateCamTemp(float);
+
   public slots:
     void atualizaTemp(QString);
+};
+
+class defLabel : public QLabel {
+  Q_OBJECT;
+
+  public:
+    defLabel(QWidget *parent = 0);
+    ~defLabel();
+
+  public slots:
+    void writeText(QString);
 };
 
 #endif

@@ -118,6 +118,7 @@ void LeptonThread::run()
 		}
         //lets emit the signal for update
 		emit updateImage(myImage);
+        emit getCamTemp(lepton_read_camtemp());
 
 	}
 	

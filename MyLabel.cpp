@@ -47,7 +47,19 @@ TempLabel::~TempLabel()
 
 void TempLabel::atualizaTemp(QString temp_str)
 {
-  this->setText("Temp: " + temp_str);
+  this->setText(temp_str);
+}
+
+defLabel::defLabel(QWidget *parent) : QLabel(parent)
+{
+}
+defLabel::~defLabel()
+{
+}
+
+void defLabel::writeText(QString temp_str)
+{
+  this->setText(temp_str);
 }
 
 void MyLabel::salvaBMP()
@@ -58,4 +70,9 @@ void MyLabel::salvaBMP()
         QImage temp_Img = this->pixmap()->toImage();
         temp_Img.save(filename, "BMP", 100);
     }
+}
+
+void TempLabel::updateCamTemp(float camTemp)
+{
+    this->setText(QString::number(camTemp));
 }
