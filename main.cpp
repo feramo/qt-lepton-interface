@@ -16,7 +16,7 @@
 #define cam_heigh   60*10
 #define cam_x       10
 #define cam_y       10
-#define win_width   cam_width+130
+#define win_width   cam_width+200
 #define win_heigh   cam_heigh+20
 
 int main( int argc, char **argv )
@@ -44,20 +44,42 @@ int main( int argc, char **argv )
 	myLabel.setPixmap(QPixmap::fromImage(myImage));
 
     //create a label to show temperature
+    QFont f_title("Times", 20, QFont::Bold);
+    QFont f_temp("Times", 70, QFont::Bold);
+
+    defLabel temp_right_title(myWidget);
+    temp_right_title.setGeometry(cam_x+cam_width+10, 90, 150, 20);
+    temp_right_title.setText("Temp (ADU):");
+    temp_right_title.setFont(f_title);
     TempLabel temp_right(myWidget);
-    temp_right.setGeometry(cam_x+cam_width+10, 50, 100, 30);
-    temp_right.setText("Temp: ");
+    temp_right.setGeometry(cam_x+cam_width+10, 115, 200, 70);
+    temp_right.setText(QObject::trUtf8("---"));
+    temp_right.setFont(f_temp);
     QObject::connect(&myLabel, SIGNAL(enviaLabel(QString)), &temp_right, SLOT(atualizaTemp(QString)));
 
-    //create a button to save the image as .bmp
-    QPushButton *button2 = new QPushButton("Salvar BMP", myWidget);
-    button2->setGeometry(cam_x+cam_width+10, 90, 100, 30);
-
+    defLabel temp_cam_title(myWidget);
+    temp_cam_title.setGeometry(cam_x+cam_width+10, 190, 150, 20);
+    temp_cam_title.setText("Camera:");
+    temp_cam_title.setFont(f_title);
+    TempLabel temp_cam(myWidget);
+    temp_cam.setGeometry(cam_x+cam_width+10, 215, 200, 70);
+    temp_cam.setText(QObject::trUtf8("---"));
+    temp_cam.setFont(f_temp);
+    //QObject::connect(&myLabel, SIGNAL(enviaLabel(QString)), &temp_right, SLOT(atualizaTemp(QString)));
+    
 	//create a FFC button
 	QPushButton *button1 = new QPushButton("Perform FFC", myWidget);
     button1->setGeometry(cam_x+cam_width+10, 10, 100, 30);
 
-	//create a thread to gather SPI data
+    //create a button to save the image as .bmp
+    QPushButton *button2 = new QPushButton("Salvar BMP", myWidget);
+    button2->setGeometry(cam_x+cam_width+10, 50, 100, 30);
+
+    //create a button get camera temperature
+    QPushButton *button3 = new QPushButton("Temp. câmera", myWidget);
+    button3->setGeometry(cam_x+cam_width+10, 290, 100, 30);
+
+    //create a thread to gather SPI data
 	//when the thread emits updateImage, the label should update its image accordingly
     LeptonThread *thread = LeptonThread::Instance();
 	QObject::connect(thread, SIGNAL(updateImage(QImage)), &myLabel, SLOT(setImage(QImage)));
@@ -67,6 +89,10 @@ int main( int argc, char **argv )
 
     //connect save button to the save action
     QObject::connect(button2, SIGNAL(clicked()), &myLabel, SLOT(salvaBMP()));
+
+    //connect temp button to the thread's gettemp action
+    //QObject::connect(button3, SIGNAL(clicked()), &myLabel, SLOT(updateCamTemp()));
+    QObject::connect(thread, SIGNAL(getCamTemp(float)), &temp_cam, SLOT(updateCamTemp(float)));
 
     thread->start();
 	
