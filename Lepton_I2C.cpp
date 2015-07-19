@@ -39,4 +39,21 @@ void lepton_read_camtemp(short unsigned int *return_temp)
     *return_temp = auxTemp;
 }
 
+bool lepton_toggle_radiometry()
+{
+    LEP_SYS_TELEMETRY_ENABLE_STATE_E tele_state;
+    LEP_GetSysTelemetryEnableState(&_port, &tele_state);
+
+    if(tele_state == LEP_TELEMETRY_DISABLED)
+    {
+        LEP_SetSysTelemetryEnableState(&_port, LEP_TELEMETRY_ENABLED);
+        return true;
+    }
+    else
+    {
+        LEP_SetSysTelemetryEnableState(&_port, LEP_TELEMETRY_DISABLED);
+        return false;
+    }
+}
+
 //presumably more commands could go here if desired

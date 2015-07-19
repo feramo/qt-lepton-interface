@@ -76,8 +76,15 @@ int main( int argc, char **argv )
     button2->setGeometry(cam_x+cam_width+10, 50, 100, 30);
 
     //create a button to change camera radiometry
-    QPushButton *button3 = new QPushButton("Temp corr: off", myWidget);
+    QPushButton *button3 = new QPushButton(myWidget);
+    button3->setText("Telemetry");
     button3->setGeometry(cam_x+cam_width+10, 290, 100, 30);
+
+    defLabel telemetry_State(myWidget);
+    telemetry_State.setGeometry(cam_x+cam_width+10, 330, 200, 20);
+    telemetry_State.setText(QObject::trUtf8("Telemetry: ?"));
+    telemetry_State.setFont(f_title);
+
 
     //create a thread to gather SPI data
 	//when the thread emits updateImage, the label should update its image accordingly
@@ -94,7 +101,8 @@ int main( int argc, char **argv )
     QObject::connect(thread, SIGNAL(getCamTemp(int)), &temp_cam, SLOT(updateCamTemp(int)));
 
     //connect temp button to the thread's gettemp action
-    //QObject::connect(button3, SIGNAL(clicked()), &myLabel, SLOT(updateCamTemp()));
+    QObject::connect(button3, SIGNAL(clicked()), thread, SLOT(toggleRadiometry()));
+    QObject::connect(thread, SIGNAL(updateRadiometry(QString)), &telemetry_State, SLOT(writeText(QString)));
 
     thread->start();
 	

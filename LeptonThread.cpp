@@ -142,3 +142,15 @@ void LeptonThread::get_result(uint16_t* target_result)
 {
     memcpy(target_result, lepton_result_swapped, sizeof(lepton_result_swapped));
 }
+
+void LeptonThread::toggleRadiometry()
+{
+    if(lepton_toggle_radiometry())
+    {
+        emit(updateRadiometry(QString("Telemetry: on")));
+    }
+    else
+    {
+        emit(updateRadiometry(QString("Telemetry: off")));
+    }
+}

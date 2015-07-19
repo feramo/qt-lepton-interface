@@ -25,11 +25,13 @@ public:
 
 public slots:
   void performFFC();
+  void toggleRadiometry();
 
 signals:
   void updateText(QString);
   void updateImage(QImage);
   void getCamTemp(int);
+  void updateRadiometry(QString);
 
 private:
   LeptonThread();
