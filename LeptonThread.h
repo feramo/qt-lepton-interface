@@ -29,7 +29,7 @@ public slots:
 signals:
   void updateText(QString);
   void updateImage(QImage);
-  void getCamTemp(float);
+  void getCamTemp(int);
 
 private:
   LeptonThread();
@@ -42,6 +42,7 @@ private:
   uint16_t* frameBuffer;
   uint8_t lepton_result[PACKET_SIZE*PACKETS_PER_FRAME];
   uint16_t lepton_result_swapped[(PACKET_SIZE*PACKETS_PER_FRAME)/2];
+  uint16_t lepton_frames = 100;
 
 };
 class Logger{

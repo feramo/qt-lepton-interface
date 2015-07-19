@@ -2,6 +2,6 @@
 #define LEPTON_I2C
 
 void lepton_perform_ffc();
-float lepton_read_camtemp();
+void lepton_read_camtemp(unsigned short *return_temp);
 
 #endif

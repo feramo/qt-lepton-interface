@@ -44,7 +44,7 @@ class TempLabel : public QLabel {
     ~TempLabel();
 
 public slots:
-    void updateCamTemp(float);
+    void updateCamTemp(int);
 
   public slots:
     void atualizaTemp(QString);

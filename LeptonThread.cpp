@@ -32,6 +32,7 @@ LeptonThread::~LeptonThread() {
 
 void LeptonThread::run()
 {
+    uint16_t f_cam_temp;
 	//create the initial image
 	myImage = QImage(80, 60, QImage::Format_RGB888);
 
@@ -118,8 +119,14 @@ void LeptonThread::run()
 		}
         //lets emit the signal for update
 		emit updateImage(myImage);
-        emit getCamTemp(lepton_read_camtemp());
 
+        ++lepton_frames;
+        if(lepton_frames > 100)
+        {
+            lepton_frames = 0;
+            lepton_read_camtemp(&f_cam_temp);
+            emit getCamTemp(f_cam_temp);
+        }
 	}
 	
 	//finally, close SPI port just bcuz

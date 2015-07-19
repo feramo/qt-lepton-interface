@@ -45,7 +45,7 @@ int main( int argc, char **argv )
 
     //create a label to show temperature
     QFont f_title("Times", 20, QFont::Bold);
-    QFont f_temp("Times", 70, QFont::Bold);
+    QFont f_temp("Times", 50, QFont::Bold);
 
     defLabel temp_right_title(myWidget);
     temp_right_title.setGeometry(cam_x+cam_width+10, 90, 150, 20);
@@ -75,8 +75,8 @@ int main( int argc, char **argv )
     QPushButton *button2 = new QPushButton("Salvar BMP", myWidget);
     button2->setGeometry(cam_x+cam_width+10, 50, 100, 30);
 
-    //create a button get camera temperature
-    QPushButton *button3 = new QPushButton("Temp. câmera", myWidget);
+    //create a button to change camera radiometry
+    QPushButton *button3 = new QPushButton("Temp corr: off", myWidget);
     button3->setGeometry(cam_x+cam_width+10, 290, 100, 30);
 
     //create a thread to gather SPI data
@@ -90,9 +90,11 @@ int main( int argc, char **argv )
     //connect save button to the save action
     QObject::connect(button2, SIGNAL(clicked()), &myLabel, SLOT(salvaBMP()));
 
+    //connect thread to camera internal temperature measurement
+    QObject::connect(thread, SIGNAL(getCamTemp(int)), &temp_cam, SLOT(updateCamTemp(int)));
+
     //connect temp button to the thread's gettemp action
     //QObject::connect(button3, SIGNAL(clicked()), &myLabel, SLOT(updateCamTemp()));
-    QObject::connect(thread, SIGNAL(getCamTemp(float)), &temp_cam, SLOT(updateCamTemp(float)));
 
     thread->start();
 	

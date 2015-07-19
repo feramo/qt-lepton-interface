@@ -72,7 +72,8 @@ void MyLabel::salvaBMP()
     }
 }
 
-void TempLabel::updateCamTemp(float camTemp)
+void TempLabel::updateCamTemp(int camTemp)
 {
-    this->setText(QString::number(camTemp));
+    QString qs_temp;
+    this->setText(QString("%1.%2%3K").arg(camTemp/100).arg(camTemp/10%10).arg(camTemp%10));
 }

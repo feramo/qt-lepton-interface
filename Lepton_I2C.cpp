@@ -23,7 +23,7 @@ void lepton_perform_ffc() {
 	LEP_RunSysFFCNormalization(&_port);
 }
 
-float lepton_read_camtemp()
+void lepton_read_camtemp(short unsigned int *return_temp)
 {
     LEP_RESULT result = LEP_OK;
     LEP_SYS_AUX_TEMPERATURE_KELVIN_T auxTemp=1;
@@ -35,9 +35,8 @@ float lepton_read_camtemp()
     if(_connected)
     {
         result = LEP_GetSysAuxTemperatureKelvin(&_port,&auxTemp);
-        qDebug() << "Leu camtemp(): " << auxTemp << "; Result: " << result;
     }
-    return (float) auxTemp;
+    *return_temp = auxTemp;
 }
 
 //presumably more commands could go here if desired
