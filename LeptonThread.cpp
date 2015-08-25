@@ -10,8 +10,8 @@
 #define FRAME_SIZE_UINT16 (PACKET_SIZE_UINT16*PACKETS_PER_FRAME)
 #define FPS 27;
 
-#define min_temp 20
-#define max_temp 40
+#define min_temp 23
+#define max_temp 50
 
 LeptonThread* LeptonThread::m_pInstance = NULL;
 
@@ -67,8 +67,8 @@ void LeptonThread::run()
         frameBuffer = (uint16_t *)lepton_result;
 		int row, column;
 		uint16_t value;
-        uint16_t minValue = min_temp*40+7200;
-        uint16_t maxValue = max_temp*40+7200;
+        uint16_t minValue = round(min_temp*31.737+6809);
+        uint16_t maxValue = round(max_temp*31.737+6809);
 /*        uint16_t minValue = 65535;
         uint16_t maxValue = 0;*/
 
@@ -111,7 +111,7 @@ void LeptonThread::run()
 				continue;
 			}
 			value = (frameBuffer[i] - minValue) * scale;
-            const int *colormap = colormap_truergb;
+            const int *colormap = colormap_maplin;
 			color = qRgb(colormap[3*value], colormap[3*value+1], colormap[3*value+2]);
 			column = (i % PACKET_SIZE_UINT16 ) - 2;
 			row = i / PACKET_SIZE_UINT16;
