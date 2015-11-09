@@ -12,6 +12,8 @@
 
 #define min_temp 23
 #define max_temp 50
+#define a_fact 7377.9
+#define b_fact 27.642
 
 LeptonThread* LeptonThread::m_pInstance = NULL;
 
@@ -67,8 +69,8 @@ void LeptonThread::run()
         frameBuffer = (uint16_t *)lepton_result;
 		int row, column;
 		uint16_t value;
-        uint16_t minValue = round(min_temp*31.737+6809);
-        uint16_t maxValue = round(max_temp*31.737+6809);
+        uint16_t minValue = round(min_temp*b_fact+a_fact);
+        uint16_t maxValue = round(max_temp*b_fact+a_fact);
 /*        uint16_t minValue = 65535;
         uint16_t maxValue = 0;*/
 
