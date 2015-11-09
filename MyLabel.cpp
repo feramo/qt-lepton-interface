@@ -28,6 +28,13 @@ void MyLabel::mouseMoveEvent(QMouseEvent *ev)
     uint32_t pix_temp = (uint32_t) frameBuffer[x_eq + 2 + (y_eq * 82)];
 
     emit enviaLabel(QString::number(pix_temp));
+
+    pix_temp = (uint32_t) ((pix_temp-6809)*3.151);
+    uint8_t temp_integ = pix_temp/100;
+    uint8_t temp_dec = pix_temp/10%10;
+    uint8_t temp_cent = pix_temp%10;
+
+    emit enviaLabel_C(QString("%1.%2%3").arg(temp_integ).arg(temp_dec).arg(temp_cent));
 }
 
 //when the system calls setImage, we'll set the label's pixmap

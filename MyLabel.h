@@ -30,6 +30,7 @@ class MyLabel : public QLabel {
 
   signals:
     void enviaLabel(QString);
+    void enviaLabel_C(QString);
 
 private:
   uint16_t frameBuffer[(PACKET_SIZE*PACKETS_PER_FRAME/2)];
@@ -43,10 +44,8 @@ class TempLabel : public QLabel {
     TempLabel(QWidget *parent = 0);
     ~TempLabel();
 
-public slots:
-    void updateCamTemp(int);
-
   public slots:
+    void updateCamTemp(int);
     void atualizaTemp(QString);
 };
 
