@@ -12,8 +12,6 @@
 
 #define min_temp 23
 #define max_temp 50
-#define a_fact 7377.9
-#define b_fact 27.642
 
 LeptonThread* LeptonThread::m_pInstance = NULL;
 
