@@ -15,6 +15,7 @@
 #define FRAME_SIZE_UINT16 (PACKET_SIZE_UINT16*PACKETS_PER_FRAME)
 #define a_fact 7377.9
 #define b_fact 27.642
+#define b_fact_inv100 3.6177 //binv = 100 / b
 
 class LeptonThread : public QThread
 {

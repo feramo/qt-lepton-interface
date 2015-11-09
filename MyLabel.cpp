@@ -29,7 +29,7 @@ void MyLabel::mouseMoveEvent(QMouseEvent *ev)
 
     emit enviaLabel(QString::number(pix_temp));
 
-    pix_temp = (uint32_t) ((pix_temp-6809)*3.151);
+    pix_temp = (uint32_t) ((pix_temp-a_fact)*b_fact_inv100);
     uint8_t temp_integ = pix_temp/100;
     uint8_t temp_dec = pix_temp/10%10;
     uint8_t temp_cent = pix_temp%10;
