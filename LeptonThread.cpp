@@ -10,8 +10,8 @@
 #define FRAME_SIZE_UINT16 (PACKET_SIZE_UINT16*PACKETS_PER_FRAME)
 #define FPS 27;
 
-#define min_temp 23
-#define max_temp 50
+//#define min_temp 23
+//#define max_temp 50
 
 LeptonThread* LeptonThread::m_pInstance = NULL;
 
@@ -38,6 +38,10 @@ void LeptonThread::run()
 
 	//open spi port
 	SpiOpenPort(0);
+    min_temp = 20;
+    max_temp = 50;
+    temp_min = 20;
+    temp_max = 50;
 
 	while(true) {
 
@@ -65,10 +69,10 @@ void LeptonThread::run()
 		}
 
         frameBuffer = (uint16_t *)lepton_result;
-		int row, column;
-		uint16_t value;
-        uint16_t minValue = round(min_temp*b_fact+a_fact);
-        uint16_t maxValue = round(max_temp*b_fact+a_fact);
+        int row, column;
+        uint16_t value;
+        uint16_t minValue = (min_temp*b_fact+a_fact);
+        uint16_t maxValue = (max_temp*b_fact+a_fact);
 /*        uint16_t minValue = 65535;
         uint16_t maxValue = 0;*/
 
@@ -152,5 +156,26 @@ void LeptonThread::toggleRadiometry()
     else
     {
         emit(updateRadiometry(QString("Telemetry: off")));
+    }
+}
+
+void LeptonThread::get_temp_min(int t_min)
+{
+    temp_min = t_min;
+    update_temp_range();
+}
+void LeptonThread::get_temp_max(int t_max)
+{
+    temp_max = t_max;
+    update_temp_range();
+}
+void LeptonThread::update_temp_range()
+{
+    int temp_gap = static_cast<int>(temp_max)-static_cast<int>(temp_min);
+    if(temp_gap>5)
+    {
+        min_temp = temp_min;
+        max_temp = temp_max;
+        emit(updateRange(QString("Range: %1 a %2").arg(min_temp).arg(max_temp)));
     }
 }

@@ -9,6 +9,7 @@
 #include <QtDebug>
 #include <QString>
 #include <QPushButton>
+#include <QSlider>
 
 #include "LeptonThread.h"
 #include "MyLabel.h"
@@ -21,6 +22,7 @@
 #define win_heigh       cam_heigh+20
 
 //#define FULLSCREEN
+#define CAM_LUIZ
 
 #define BORDER_RATIO        0.01F
 #define BUTTON_RATIO        0.25F
@@ -209,6 +211,38 @@ int main( int argc, char **argv )
     telemetry_State.setText(QObject::trUtf8("Telemetry: ?"));
     telemetry_State.setFont(f_title);
 
+    QSlider qs_min_temp(Qt::Horizontal, myWidget);
+#ifdef FULLSCREEN
+    qs_min_temp.setGeometry(x, y, max_column_sz, 30);
+    y += qs_min_temp.geometry().height() + (border/2);
+#else
+    qs_min_temp.setGeometry(cam_x+cam_width+10, 480, 150, 20);
+#endif
+    qs_min_temp.setMinimum(15);
+    qs_min_temp.setMaximum(50);
+    qs_min_temp.setValue(20);
+
+    QSlider qs_max_temp(Qt::Horizontal, myWidget);
+#ifdef FULLSCREEN
+    qs_max_temp.setGeometry(x, y, max_column_sz, 30);
+    y += qs_max_temp.geometry().height() + (border/2);
+#else
+    qs_max_temp.setGeometry(cam_x+cam_width+10, 520, 150, 20);
+#endif
+    qs_max_temp.setMinimum(15);
+    qs_max_temp.setMaximum(50);
+    qs_max_temp.setValue(50);
+
+    defLabel range_State(myWidget);
+#ifdef FULLSCREEN
+    range_State.setGeometry(x, y, column_x, f_title.pointSize());
+    y += range_State.geometry().height() + (border/2);
+#else
+    range_State.setGeometry(cam_x+cam_width+10, 550, 200, 20);
+#endif
+    range_State.setText(QObject::trUtf8("Range: 20 a 50"));
+    range_State.setFont(f_title);
+
 
     //create a thread to gather SPI data
 	//when the thread emits updateImage, the label should update its image accordingly
@@ -227,7 +261,10 @@ int main( int argc, char **argv )
     //connect temp button to the thread's gettemp action
     QObject::connect(button3, SIGNAL(clicked()), thread, SLOT(toggleRadiometry()));
     QObject::connect(thread, SIGNAL(updateRadiometry(QString)), &telemetry_State, SLOT(writeText(QString)));
+    QObject::connect(thread, SIGNAL(updateRange(QString)), &range_State, SLOT(writeText(QString)));
 
+    QObject::connect(&qs_min_temp, SIGNAL(valueChanged(int)), thread, SLOT(get_temp_min(int)));
+    QObject::connect(&qs_max_temp, SIGNAL(valueChanged(int)), thread, SLOT(get_temp_max(int)));
     thread->start();
 	
 	myWidget->show();

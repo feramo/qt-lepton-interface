@@ -13,9 +13,16 @@
 #define PACKET_SIZE_UINT16 (PACKET_SIZE/2)
 #define PACKETS_PER_FRAME 60
 #define FRAME_SIZE_UINT16 (PACKET_SIZE_UINT16*PACKETS_PER_FRAME)
-#define a_fact 7377.9
-#define b_fact 27.642
-#define b_fact_inv100 3.6177 //binv = 100 / b
+
+#ifdef CAM_LUIZ
+    #define a_fact 6809
+    #define b_fact 31.737
+    #define b_fact_inv100 3.1509 //binv = 100 / b
+#else
+    #define a_fact 7377.9
+    #define b_fact 27.642
+    #define b_fact_inv100 3.6177 //binv = 100 / b
+#endif
 
 class LeptonThread : public QThread
 {
@@ -29,12 +36,15 @@ public:
 public slots:
   void performFFC();
   void toggleRadiometry();
+  void get_temp_min(int);
+  void get_temp_max(int);
 
 signals:
   void updateText(QString);
   void updateImage(QImage);
   void getCamTemp(int);
   void updateRadiometry(QString);
+  void updateRange(QString);
 
 private:
   LeptonThread();
@@ -42,12 +52,16 @@ private:
   LeptonThread(LeptonThread const&){};
   LeptonThread& operator=(LeptonThread const&){};
   static LeptonThread* m_pInstance;
+  void update_temp_range();
 
   QImage myImage;
   uint16_t* frameBuffer;
   uint8_t lepton_result[PACKET_SIZE*PACKETS_PER_FRAME];
   uint16_t lepton_result_swapped[(PACKET_SIZE*PACKETS_PER_FRAME)/2];
   uint16_t lepton_frames = 100;
+  uint8_t temp_min, temp_max;
+  uint8_t min_temp = 20;
+  uint8_t max_temp = 50;
 
 };
 class Logger{
