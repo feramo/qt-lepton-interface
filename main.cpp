@@ -21,8 +21,8 @@
 #define win_width       cam_width+200
 #define win_heigh       cam_heigh+20
 
-//#define FULLSCREEN
-#define CAM_LUIZ
+#define FULLSCREEN
+//#define CAM_LUIZ
 
 #define BORDER_RATIO        0.01F
 #define BUTTON_RATIO        0.25F
@@ -58,7 +58,7 @@ int main( int argc, char **argv )
 
     {
         const int w = app_rect.width() - (border + border + button + border);
-        const int h = static_cast<int>(static_cast<float>(w)*aspect_ratio_inv);
+        const int h = app_rect.height() - (border + border);
 
         printf("Set QImage size: %dx%d\n", w, h);
 

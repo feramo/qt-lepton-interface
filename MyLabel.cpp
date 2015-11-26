@@ -42,7 +42,7 @@ void MyLabel::setImage(QImage image) {
   QPixmap pixmap = QPixmap::fromImage(image);
   int w = this->width();
   int h = this->height();
-  setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
+  setPixmap(pixmap.scaled(w, h, Qt::IgnoreAspectRatio));
 }
 
 TempLabel::TempLabel(QWidget *parent) : QLabel(parent)
