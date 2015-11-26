@@ -9,6 +9,10 @@
 #include <QPixmap>
 #include <QImage>
 
+#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #define PACKET_SIZE 164
 #define PACKET_SIZE_UINT16 (PACKET_SIZE/2)
 #define PACKETS_PER_FRAME 60
