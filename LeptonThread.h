@@ -42,6 +42,7 @@ public slots:
   void toggleRadiometry();
   void get_temp_min(int);
   void get_temp_max(int);
+  void get_interpolation_method(int);
 
 signals:
   void updateText(QString);
@@ -63,9 +64,14 @@ private:
   uint8_t lepton_result[PACKET_SIZE*PACKETS_PER_FRAME];
   uint16_t lepton_result_swapped[(PACKET_SIZE*PACKETS_PER_FRAME)/2];
   uint16_t lepton_frames = 100;
+
+  QImage cvImage;
+  uint8_t frameBW[(PACKET_SIZE*PACKETS_PER_FRAME)/2];
+
   uint8_t temp_min, temp_max;
   uint8_t min_temp = 20;
   uint8_t max_temp = 50;
+  uint8_t method_index = 0;
 
 };
 class Logger{

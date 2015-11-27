@@ -10,6 +10,7 @@
 #include <QString>
 #include <QPushButton>
 #include <QSlider>
+#include <QComboBox>
 
 #include "LeptonThread.h"
 #include "MyLabel.h"
@@ -243,6 +244,23 @@ int main( int argc, char **argv )
     range_State.setText(QObject::trUtf8("Range: 20 a 50"));
     range_State.setFont(f_title);
 
+    QComboBox qc_interpolation(myWidget);
+#ifdef FULLSCREEN
+    qc_interpolation.setGeometry(x, y, max_column_sz, 30);
+    y += qc_interpolation.geometry().height() + (border/2);
+#else
+    qc_interpolation.setGeometry(cam_x+cam_width+10, 600, 200, 30);
+#endif
+    qc_interpolation.addItem("Nenhum");
+    qc_interpolation.addItem("Cubic");
+    qc_interpolation.addItem("Lanczos");
+
+    //Close button
+#ifdef FULLSCREEN
+    QPushButton *close_button = new QPushButton(myWidget);
+    close_button->setText("X");
+    close_button->setGeometry(a.desktop()->width()-15, a.desktop()->height()-15, 15, 15);
+#endif
 
     //create a thread to gather SPI data
 	//when the thread emits updateImage, the label should update its image accordingly
@@ -265,6 +283,11 @@ int main( int argc, char **argv )
 
     QObject::connect(&qs_min_temp, SIGNAL(valueChanged(int)), thread, SLOT(get_temp_min(int)));
     QObject::connect(&qs_max_temp, SIGNAL(valueChanged(int)), thread, SLOT(get_temp_max(int)));
+
+    QObject::connect(&qc_interpolation, SIGNAL(currentIndexChanged(int)), thread, SLOT(get_interpolation_method(int)));
+
+    QObject::connect(close_button, SIGNAL(clicked()), myWidget, SLOT(close()));
+
     thread->start();
 	
 	myWidget->show();

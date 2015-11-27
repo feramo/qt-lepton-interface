@@ -43,7 +43,25 @@ void LeptonThread::run()
     temp_min = 20;
     temp_max = 50;
 
-	while(true) {
+    method_index = 0;
+
+    cv::Mat im_grey(60,80,CV_8UC1, &frameBW);
+#ifdef FULLSCREEN
+    cv::Mat im_grey_rs(584, 576,CV_8UC1);
+#else
+    cv::Mat im_grey_rs(480, 640,CV_8UC1);
+#endif
+
+    const int *colormap = colormap_maplin;
+    static QVector<QRgb>  sColorTable;
+    // only create our color table once
+    if ( sColorTable.isEmpty() )
+    {
+        for ( int i = 0; i < 256; ++i )
+        sColorTable.push_back(qRgb(colormap[3*i], colormap[3*i+1], colormap[3*i+2]));
+    }
+
+    while(true) {
 
 		//read data packets from lepton over SPI
 		int resets = 0;
@@ -110,19 +128,42 @@ void LeptonThread::run()
         float diff = maxValue - minValue;
 		float scale = 255/diff;
 		QRgb color;
-		for(int i=0;i<FRAME_SIZE_UINT16;i++) {
+        int j=0;
+        for(int i=0;i<FRAME_SIZE_UINT16;i++) {
 			if(i % PACKET_SIZE_UINT16 < 2) {
 				continue;
 			}
 			value = (frameBuffer[i] - minValue) * scale;
-            const int *colormap = colormap_maplin;
+            frameBW[j] = static_cast<uint8_t>(value);
+            j++;
 			color = qRgb(colormap[3*value], colormap[3*value+1], colormap[3*value+2]);
 			column = (i % PACKET_SIZE_UINT16 ) - 2;
 			row = i / PACKET_SIZE_UINT16;
 			myImage.setPixel(column, row, color);
 		}
-        //lets emit the signal for update
-		emit updateImage(myImage);
+
+        if(method_index==0)
+        {
+            emit updateImage(myImage);
+        }
+        else
+        {
+            switch(method_index)
+            {
+            case 1:
+                cv::resize(im_grey, im_grey_rs, im_grey_rs.size(), 0, 0, cv::INTER_CUBIC);
+                break;
+            case 2:
+                cv::resize(im_grey, im_grey_rs, im_grey_rs.size(), 0, 0, cv::INTER_LANCZOS4);
+                break;
+            default:
+                break;
+            }
+            cvImage = QImage(im_grey_rs.data, im_grey_rs.cols, im_grey_rs.rows, QImage::Format_Indexed8);
+            cvImage.setColorTable( sColorTable );
+
+            emit updateImage(cvImage);
+        }
 
         ++lepton_frames;
         if(lepton_frames > 100)
@@ -178,4 +219,10 @@ void LeptonThread::update_temp_range()
         max_temp = temp_max;
         emit(updateRange(QString("Range: %1 a %2").arg(min_temp).arg(max_temp)));
     }
+}
+
+void LeptonThread::get_interpolation_method(int index)
+{
+    method_index = index;
+
 }

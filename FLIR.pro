@@ -40,10 +40,7 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../opencv_ARM/build/3rdparty/lib/liblibwe
 unix:!macx: LIBS += -L$$PWD/../../opencv_ARM/build/3rdparty/lib/ -lIlmImf
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../opencv_ARM/build/3rdparty/lib/libIlmImf.a
 
-unix:!macx: LIBS += -L$$PWD/../../../../usr/lib/i386-linux-gnu/ -ldl
+unix:!macx: LIBS += -L$$PWD/../../../../opt/poky-lla/1.7.1/sysroots/armv6-vfp-poky-linux-gnueabi/lib/ -ldl-2.20 -lc
 
-INCLUDEPATH += $$PWD/../../../../usr/lib/i386-linux-gnu
-DEPENDPATH += $$PWD/../../../../usr/lib/i386-linux-gnu
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../usr/lib/i386-linux-gnu/libdl.a
-
+INCLUDEPATH += $$PWD/../../../../opt/poky-lla/1.7.1/sysroots/armv6-vfp-poky-linux-gnueabi
+DEPENDPATH += $$PWD/../../../../opt/poky-lla/1.7.1/sysroots/armv6-vfp-poky-linux-gnueabi
