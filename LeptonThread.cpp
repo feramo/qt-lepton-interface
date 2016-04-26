@@ -34,7 +34,7 @@ void LeptonThread::run()
 {
     uint16_t f_cam_temp;
 	//create the initial image
-	myImage = QImage(80, 60, QImage::Format_RGB888);
+    myImage = QImage(80, 60, QImage::Format_Indexed8);
 
 	//open spi port
 	SpiOpenPort(0);
@@ -133,17 +133,14 @@ void LeptonThread::run()
 			if(i % PACKET_SIZE_UINT16 < 2) {
 				continue;
 			}
-			value = (frameBuffer[i] - minValue) * scale;
-            frameBW[j] = static_cast<uint8_t>(value);
+            frameBW[j] = static_cast<uint8_t>((frameBuffer[i] - minValue) * scale);
             j++;
-			color = qRgb(colormap[3*value], colormap[3*value+1], colormap[3*value+2]);
-			column = (i % PACKET_SIZE_UINT16 ) - 2;
-			row = i / PACKET_SIZE_UINT16;
-			myImage.setPixel(column, row, color);
 		}
 
         if(method_index==0)
         {
+            myImage = QImage(frameBW, 80, 60, QImage::Format_Indexed8);
+            myImage.setColorTable( sColorTable );
             emit updateImage(myImage);
         }
         else
@@ -172,6 +169,7 @@ void LeptonThread::run()
             lepton_read_camtemp(&f_cam_temp);
             emit getCamTemp(f_cam_temp);
         }
+        this->msleep(5);
 	}
 	
 	//finally, close SPI port just bcuz
