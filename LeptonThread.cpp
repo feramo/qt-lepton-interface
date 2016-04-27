@@ -52,13 +52,9 @@ void LeptonThread::run()
     cv::Mat im_grey_rs(480, 640,CV_8UC1);
 #endif
 
-    const int *colormap = colormap_maplin;
-    static QVector<QRgb>  sColorTable;
-    // only create our color table once
     if ( sColorTable.isEmpty() )
     {
-        for ( int i = 0; i < 256; ++i )
-        sColorTable.push_back(qRgb(colormap[3*i], colormap[3*i+1], colormap[3*i+2]));
+      get_palette(0);
     }
 
     while(true) {
@@ -137,25 +133,15 @@ void LeptonThread::run()
             j++;
 		}
 
-        if(method_index==0)
+        if(method_index==1)
         {
             myImage = QImage(frameBW, 80, 60, QImage::Format_Indexed8);
             myImage.setColorTable( sColorTable );
             emit updateImage(myImage);
         }
-        else
+        else if(method_index==0)
         {
-            switch(method_index)
-            {
-            case 1:
-                cv::resize(im_grey, im_grey_rs, im_grey_rs.size(), 0, 0, cv::INTER_CUBIC);
-                break;
-            case 2:
-                cv::resize(im_grey, im_grey_rs, im_grey_rs.size(), 0, 0, cv::INTER_LANCZOS4);
-                break;
-            default:
-                break;
-            }
+            cv::resize(im_grey, im_grey_rs, im_grey_rs.size(), 0, 0, cv::INTER_CUBIC);
             cvImage = QImage(im_grey_rs.data, im_grey_rs.cols, im_grey_rs.rows, QImage::Format_Indexed8);
             cvImage.setColorTable( sColorTable );
 
@@ -223,4 +209,39 @@ void LeptonThread::get_interpolation_method(int index)
 {
     method_index = index;
 
+}
+
+void LeptonThread::get_palette(int index)
+{
+    palette_index = index;
+    int *cm_addr;
+
+    switch(index)
+    {
+    case 0:
+      cm_addr = cm_lla_default;
+      break;
+    case 1:
+      cm_addr = cm_lla_hotblue;
+      break;
+    case 2:
+      cm_addr = cm_lla_medic;
+      break;
+    case 3:
+      cm_addr = cm_lla_medic2;
+      break;
+    case 4:
+      cm_addr = cm_lla_medic3;
+      break;
+    case 5:
+      cm_addr = cm_lla_grayscale;
+      break;
+    default:
+      break;
+    }
+    int *colormap = (int *) cm_addr;
+    sColorTable.clear();
+    for ( int i = 0; i < 256; ++i )
+    sColorTable.push_back(qRgb(colormap[3*i], colormap[3*i+1], colormap[3*i+2]));
+    printf("Mudou, cor[0]=%d", qRed(sColorTable[0]));
 }

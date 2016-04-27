@@ -1,3 +1,19 @@
+/*
+
+To-do
+- Pausar image e andar com mouse
+- Salvar imagem e recuperar
+- Outras paletas
+- Simplificar labels
+- Mudar resolução para telas
+- Atualizar temperatura com mouse parado
+
+Done
+- Abrir programa automaticamente
+- Destravar atualização
+
+*/
+
 #include <QApplication>
 #include <QThread>
 #include <QMutex>
@@ -251,9 +267,22 @@ int main( int argc, char **argv )
 #else
     qc_interpolation.setGeometry(cam_x+cam_width+10, 600, 200, 30);
 #endif
-    qc_interpolation.addItem("Nenhum");
     qc_interpolation.addItem("Cubic");
-    qc_interpolation.addItem("Lanczos");
+    qc_interpolation.addItem("Nenhum");
+
+    QComboBox qc_colormap(myWidget);
+#ifdef FULLSCREEN
+    qc_colormap.setGeometry(x, y, max_column_sz, 30);
+    y += qc_colormap.geometry().height() + (border/2);
+#else
+    qc_colormap.setGeometry(cam_x+cam_width+10, 650, 200, 30);
+#endif
+    qc_colormap.addItem("Default");
+    qc_colormap.addItem("Hot Blue");
+    qc_colormap.addItem("Medic");
+    qc_colormap.addItem("Medic II");
+    qc_colormap.addItem("Medic III");
+    qc_colormap.addItem("Tons cinza");
 
     //Close button
 #ifdef FULLSCREEN
@@ -285,6 +314,8 @@ int main( int argc, char **argv )
     QObject::connect(&qs_max_temp, SIGNAL(valueChanged(int)), thread, SLOT(get_temp_max(int)));
 
     QObject::connect(&qc_interpolation, SIGNAL(currentIndexChanged(int)), thread, SLOT(get_interpolation_method(int)));
+
+    QObject::connect(&qc_colormap, SIGNAL(currentIndexChanged(int)), thread, SLOT(get_palette(int)));
 
     QObject::connect(close_button, SIGNAL(clicked()), myWidget, SLOT(close()));
 

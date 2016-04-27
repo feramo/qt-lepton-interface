@@ -43,6 +43,7 @@ public slots:
   void get_temp_min(int);
   void get_temp_max(int);
   void get_interpolation_method(int);
+  void get_palette(int);
 
 signals:
   void updateText(QString);
@@ -72,6 +73,8 @@ private:
   uint8_t min_temp = 20;
   uint8_t max_temp = 50;
   uint8_t method_index = 0;
+  uint8_t palette_index = 0;
+  QVector<QRgb>  sColorTable;
 
 };
 class Logger{
