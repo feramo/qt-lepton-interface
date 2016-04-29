@@ -31,6 +31,7 @@ Done
 
 #include "LeptonThread.h"
 #include "MyLabel.h"
+#include "buttons.h"
 
 #define cam_width       80*10
 #define cam_heigh       60*10
@@ -122,6 +123,14 @@ int main( int argc, char **argv )
 #else
     button1->setGeometry(cam_x+cam_width+10, 10, 100, 30);
 #endif
+
+
+    sButton *run_button = new sButton("Run", myWidget);
+    run_button->setGeometry(x, y, floor(max_column_sz/2), 30);
+    run_button->setEnabled(false);
+    sButton *stop_button = new sButton("Stop", myWidget);
+    stop_button->setGeometry(x+floor(max_column_sz/2), y, max_column_sz-floor(max_column_sz/2), 30);
+    y += stop_button->geometry().height();
 
 
     //create a button to save the image as .bmp
@@ -321,6 +330,13 @@ int main( int argc, char **argv )
 
     //connect save button to the save action
     QObject::connect(button2, SIGNAL(clicked()), &myLabel, SLOT(salvaBMP()));
+
+    QObject::connect(run_button, SIGNAL(clicked()), thread, SLOT(activate_run_state()));
+    QObject::connect(run_button, SIGNAL(clicked()), run_button, SLOT(bt_disable()));
+    QObject::connect(run_button, SIGNAL(clicked()), stop_button, SLOT(bt_enable()));
+    QObject::connect(stop_button, SIGNAL(clicked()), thread, SLOT(deactivate_run_state()));
+    QObject::connect(stop_button, SIGNAL(clicked()), stop_button, SLOT(bt_disable()));
+    QObject::connect(stop_button, SIGNAL(clicked()), run_button, SLOT(bt_enable()));
 
     //connect thread to camera internal temperature measurement
 //    QObject::connect(thread, SIGNAL(getCamTemp(int)), &temp_cam, SLOT(updateCamTemp(int)));

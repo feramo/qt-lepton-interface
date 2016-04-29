@@ -57,7 +57,10 @@ void LeptonThread::run()
       get_palette(0);
     }
 
+    is_running = true;
+
     while(true) {
+      if(is_running) {
 
 		//read data packets from lepton over SPI
 		int resets = 0;
@@ -167,6 +170,11 @@ void LeptonThread::run()
             emit getCamTemp(f_cam_temp);
         }
         this->msleep(5);
+      }
+      else
+      {
+        this->msleep(100);
+      }
 	}
 	
 	//finally, close SPI port just bcuz
@@ -261,4 +269,13 @@ void LeptonThread::get_mousePos(QPoint pos)
 {
     last_pos_x = pos.x();
     last_pos_y = pos.y();
+}
+
+void LeptonThread::activate_run_state()
+{
+    is_running = true;
+}
+void LeptonThread::deactivate_run_state()
+{
+    is_running = false;
 }
