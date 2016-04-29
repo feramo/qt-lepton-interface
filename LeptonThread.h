@@ -44,6 +44,7 @@ public slots:
   void get_temp_max(int);
   void get_interpolation_method(int);
   void get_palette(int);
+  void get_mousePos(QPoint);
 
 signals:
   void updateText(QString);
@@ -75,6 +76,7 @@ private:
   uint8_t method_index = 0;
   uint8_t palette_index = 0;
   QVector<QRgb>  sColorTable;
+  uint8_t last_pos_x, last_pos_y;
 
 };
 class Logger{

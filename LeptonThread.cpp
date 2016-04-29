@@ -148,6 +148,17 @@ void LeptonThread::run()
             emit updateImage(cvImage);
         }
 
+        if(last_pos_x>0)
+        {
+            uint32_t pix_temp = (uint32_t) lepton_result_swapped[last_pos_x + 2 + (last_pos_y * 82)];
+            pix_temp = (uint32_t) ((pix_temp-a_fact)*b_fact_inv100);
+            uint8_t temp_integ = pix_temp/100;
+            uint8_t temp_dec = pix_temp/10%10;
+            uint8_t temp_cent = pix_temp%10;
+
+            emit updateText(QString("%1.%2%3").arg(temp_integ).arg(temp_dec).arg(temp_cent));
+        }
+
         ++lepton_frames;
         if(lepton_frames > 100)
         {
@@ -244,4 +255,10 @@ void LeptonThread::get_palette(int index)
     for ( int i = 0; i < 256; ++i )
     sColorTable.push_back(qRgb(colormap[3*i], colormap[3*i+1], colormap[3*i+2]));
     printf("Mudou, cor[0]=%d", qRed(sColorTable[0]));
+}
+
+void LeptonThread::get_mousePos(QPoint pos)
+{
+    last_pos_x = pos.x();
+    last_pos_y = pos.y();
 }

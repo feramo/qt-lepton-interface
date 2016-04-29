@@ -31,6 +31,7 @@ class MyLabel : public QLabel {
   signals:
     void enviaLabel(QString);
     void enviaLabel_C(QString);
+    void enviaMousePos(QPoint);
 
 private:
   uint16_t frameBuffer[(PACKET_SIZE*PACKETS_PER_FRAME/2)];

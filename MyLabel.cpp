@@ -35,6 +35,8 @@ void MyLabel::mouseMoveEvent(QMouseEvent *ev)
     uint8_t temp_cent = pix_temp%10;
 
     emit enviaLabel_C(QString("%1.%2%3").arg(temp_integ).arg(temp_dec).arg(temp_cent));
+
+    emit enviaMousePos(QPoint(x_eq, y_eq));
 }
 
 //when the system calls setImage, we'll set the label's pixmap
