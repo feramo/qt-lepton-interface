@@ -8,6 +8,7 @@
 #include <QtCore>
 #include <QPixmap>
 #include <QImage>
+#include <QFileDialog>
 
 #include <opencv/cv.h>
 #include <opencv2/opencv.hpp>
@@ -43,10 +44,11 @@ public slots:
   void get_temp_min(int);
   void get_temp_max(int);
   void get_interpolation_method(int);
-  void get_palette(int);
   void get_mousePos(QPoint);
   void activate_run_state();
   void deactivate_run_state();
+  void load_from_file();
+  void change_palette(int);
 
 signals:
   void updateText(QString);
@@ -62,6 +64,14 @@ private:
   LeptonThread& operator=(LeptonThread const&){};
   static LeptonThread* m_pInstance;
   void update_temp_range();
+  void get_palette(int);
+  void get_spi_data();
+  void swap_buffer();
+  void limit_framebuf();
+  void generate_bw();
+  void update_image();
+  void update_point_temp();
+  void update_camera_temp();
 
   QImage myImage;
   uint16_t* frameBuffer;

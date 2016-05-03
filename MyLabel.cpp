@@ -6,6 +6,8 @@
 #include <QPicture>
 #include <QColor>
 #include <QFileDialog>
+#include <QDataStream>
+#include <QFile>
 
 MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 {
@@ -73,11 +75,27 @@ void defLabel::writeText(QString temp_str)
 
 void MyLabel::salvaBMP()
 {
-    QString filename = QFileDialog::getSaveFileName(parentWidget(),tr("Salvar BMP"), "/boot/", "Imagem de bitmap (*.BMP)");
-    if(filename != "")
+    QString filename = QFileDialog::getSaveFileName(parentWidget(),tr("Salvar BMP"), "/home/root", "Imagem de bitmap (*.BMP)");
+    QFileInfo fi(filename);
+    if(fi.baseName() != "")
     {
+        filename = fi.baseName() + ".bmp";
         QImage temp_Img = this->pixmap()->toImage();
         temp_Img.save(filename, "BMP", 100);
+
+        filename =filename + ".raw";
+        QFile raw(filename);
+        if(raw.open(QFile::WriteOnly))
+        {
+          LeptonThread::Instance()->get_result(frameBuffer);
+          QDataStream out(&raw);
+
+          for(int i=0; i<(PACKET_SIZE*PACKETS_PER_FRAME/2);i++)
+          {
+            out << frameBuffer[i];
+          }
+          raw.close();
+        }
     }
 }
 

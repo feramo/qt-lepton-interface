@@ -1,9 +1,10 @@
 /*
 
 To-do
-- Pausar imagem e andar com mouse
-- Salvar imagem e recuperar
 - Mudar resolução para telas
+- Clarificar variáveis range
+- Mudar estrutura Run (cvMat, temp ponto, etc)
+- Melhorar sistema de salvar/abrir
 
 Done
 - Abrir programa automaticamente
@@ -11,6 +12,8 @@ Done
 - Outras paletas
 - Atualizar temperatura com mouse parado
 - Simplificar labels
+- Pausar imagem e andar com mouse
+- Salvar imagem e recuperar
 
 */
 
@@ -128,19 +131,18 @@ int main( int argc, char **argv )
     sButton *run_button = new sButton("Run", myWidget);
     run_button->setGeometry(x, y, floor(max_column_sz/2), 30);
     run_button->setEnabled(false);
-    sButton *stop_button = new sButton("Stop", myWidget);
-    stop_button->setGeometry(x+floor(max_column_sz/2), y, max_column_sz-floor(max_column_sz/2), 30);
-    y += stop_button->geometry().height();
+    sButton *pause_button = new sButton("Pause", myWidget);
+    pause_button->setGeometry(x+floor(max_column_sz/2), y, max_column_sz-floor(max_column_sz/2), 30);
+    y += pause_button->geometry().height();
 
 
     //create a button to save the image as .bmp
-    QPushButton *button2 = new QPushButton("Salvar BMP", myWidget);
-#ifdef FULLSCREEN
-    button2->setGeometry(x, y, max_column_sz, 30);
-    y += button2->geometry().height() + element_space;
-#else
-    button2->setGeometry(cam_x+cam_width+10, 50, 100, 30);
-#endif
+    sButton *save_button = new sButton("Salvar", myWidget);
+    save_button->setGeometry(x, y, floor(max_column_sz/2), 30);
+    save_button->setEnabled(false);
+    sButton *open_button = new sButton("Abrir", myWidget);
+    open_button->setGeometry(x+floor(max_column_sz/2), y, max_column_sz-floor(max_column_sz/2), 30);
+    y += save_button->geometry().height() + element_space;
 
 
     //create a label to show temperature
@@ -329,14 +331,20 @@ int main( int argc, char **argv )
     QObject::connect(button1, SIGNAL(clicked()), thread, SLOT(performFFC()));
 
     //connect save button to the save action
-    QObject::connect(button2, SIGNAL(clicked()), &myLabel, SLOT(salvaBMP()));
+    QObject::connect(save_button, SIGNAL(clicked()), &myLabel, SLOT(salvaBMP()));
 
     QObject::connect(run_button, SIGNAL(clicked()), thread, SLOT(activate_run_state()));
     QObject::connect(run_button, SIGNAL(clicked()), run_button, SLOT(bt_disable()));
-    QObject::connect(run_button, SIGNAL(clicked()), stop_button, SLOT(bt_enable()));
-    QObject::connect(stop_button, SIGNAL(clicked()), thread, SLOT(deactivate_run_state()));
-    QObject::connect(stop_button, SIGNAL(clicked()), stop_button, SLOT(bt_disable()));
-    QObject::connect(stop_button, SIGNAL(clicked()), run_button, SLOT(bt_enable()));
+    QObject::connect(run_button, SIGNAL(clicked()), save_button, SLOT(bt_disable()));
+    QObject::connect(run_button, SIGNAL(clicked()), pause_button, SLOT(bt_enable()));
+    QObject::connect(pause_button, SIGNAL(clicked()), thread, SLOT(deactivate_run_state()));
+    QObject::connect(pause_button, SIGNAL(clicked()), pause_button, SLOT(bt_disable()));
+    QObject::connect(pause_button, SIGNAL(clicked()), save_button, SLOT(bt_enable()));
+    QObject::connect(pause_button, SIGNAL(clicked()), run_button, SLOT(bt_enable()));
+    QObject::connect(open_button, SIGNAL(clicked()), thread, SLOT(load_from_file()));
+    QObject::connect(open_button, SIGNAL(clicked()), pause_button, SLOT(bt_disable()));
+    QObject::connect(open_button, SIGNAL(clicked()), save_button, SLOT(bt_disable()));
+    QObject::connect(open_button, SIGNAL(clicked()), run_button, SLOT(bt_enable()));
 
     //connect thread to camera internal temperature measurement
 //    QObject::connect(thread, SIGNAL(getCamTemp(int)), &temp_cam, SLOT(updateCamTemp(int)));
@@ -354,7 +362,7 @@ int main( int argc, char **argv )
 
     QObject::connect(&qc_interpolation, SIGNAL(currentIndexChanged(int)), thread, SLOT(get_interpolation_method(int)));
 
-    QObject::connect(&qc_colormap, SIGNAL(currentIndexChanged(int)), thread, SLOT(get_palette(int)));
+    QObject::connect(&qc_colormap, SIGNAL(currentIndexChanged(int)), thread, SLOT(change_palette(int)));
 
     QObject::connect(close_button, SIGNAL(clicked()), myWidget, SLOT(close()));
 
