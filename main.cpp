@@ -22,6 +22,7 @@ Done
 #include <QMutex>
 #include <QMessageBox>
 #include <QDesktopWidget>
+#include <stdint.h>
 
 #include <QColor>
 #include <QLabel>
@@ -71,7 +72,6 @@ int main( int argc, char **argv )
     //create an image placeholder for myLabel
     QImage myImage;
 
-#ifdef FULLSCREEN
     myWidget->setGeometry(0, 0, app_rect.width(), app_rect.height());
     myWidget->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
@@ -88,30 +88,17 @@ int main( int argc, char **argv )
 
         printf("QImage size: %dx%d\n", myImage.rect().width(), myImage.rect().height());
     }
-#else
-    myWidget->setGeometry(0, 60, win_width, win_heigh);
-
-    myImage = QImage(640, 480, QImage::Format_RGB888);
-#endif
 
 	//create a label, and set it's image to the placeholder
     MyLabel myLabel(myWidget);
-#ifdef FULLSCREEN
     myLabel.setGeometry( border,
                          (app_rect.height()-myImage.rect().height())/2,
                          myImage.rect().width(),
                          myImage.rect().height());
 
     const int column_x = border + myImage.rect().width() + border;
-#else
-    myLabel.setGeometry(cam_x, cam_y, cam_width, cam_heigh);
-#endif
     myLabel.setPixmap(QPixmap::fromImage(myImage));
 
-
-    //create a FFC button
-    QPushButton* button1 = new QPushButton("Perform FFC", myWidget);
-#ifdef FULLSCREEN
     int x = column_x;
     int y = border;
     const int half_space = border/2;
@@ -119,13 +106,39 @@ int main( int argc, char **argv )
     const int element_space = 1.5*border;
     const int section_space = 3*border;
 
-    const int max_column_sz = app_rect.width() - column_x - border;
+    //Create a label for ColorBar
 
+    ColorBar arrow(myWidget);
+    const int arrow_w = border;
+    QRgb arrowColor = qRgb(255, 0, 0);
+
+    const int arrow_h = 2*arrow_w-1;
+    arrow.setGeometry(x, y-arrow_h+arrow_w, arrow_w, arrow_h);
+    QImage arrowImg(arrow_w, arrow_h, QImage::Format_RGB888);
+    arrowImg.fill(Qt::black);
+    for(int i=0; i<arrow_w; i++)
+    {
+        for(int j=0; j<i; j++)
+        {
+            arrowImg.setPixel(j,i,arrowColor);
+            arrowImg.setPixel(j,arrow_h-i,arrowColor);
+        }
+    }
+    arrow.setPixmap(QPixmap::fromImage(arrowImg));
+    arrow.setBarHeight(myImage.height(), myImage.height()+border);
+    x += arrow.geometry().width();
+    ColorBar colorbar(myWidget);
+    colorbar.setGeometry(x, y, 10, myImage.height());
+    colorbar.setPaletteIndex(0);
+    colorbar.setStyleSheet("border: 1px solid gray");
+    x += colorbar.geometry().width() + border;
+
+    const int max_column_sz = app_rect.width() - x - border;
+
+    //create a FFC button
+    QPushButton* button1 = new QPushButton("Perform FFC", myWidget);
     button1->setGeometry(x, y, max_column_sz, 30);
     y += button1->geometry().height() + element_space;
-#else
-    button1->setGeometry(cam_x+cam_width+10, 10, 100, 30);
-#endif
 
 
     sButton *run_button = new sButton("Run", myWidget);
@@ -152,43 +165,27 @@ int main( int argc, char **argv )
 //Label with temperature in U.A.
 /*
     defLabel temp_right_title(myWidget);
-#ifdef FULLSCREEN
     temp_right_title.setGeometry(x, y, column_x, f_title.pointSize());
     y += temp_right_title.geometry().height() + (border/2);
-#else
-    temp_right_title.setGeometry(cam_x+cam_width+10, 90, 150, 20);
-#endif
     temp_right_title.setText("Temp (U.A.):");
     temp_right_title.setFont(f_title);
     TempLabel temp_right(myWidget);
-#ifdef FULLSCREEN
     temp_right.setGeometry(x, y, column_x, f_temp.pointSize());
     y += temp_right.geometry().height() + (border/2);
-#else
-    temp_right.setGeometry(cam_x+cam_width+10, 115, 200, 70);
-#endif
     temp_right.setText(QObject::trUtf8("---"));
     temp_right.setFont(f_temp);
     QObject::connect(&myLabel, SIGNAL(enviaLabel(QString)), &temp_right, SLOT(atualizaTemp(QString)));*/
 
 //Label with temperature in Celsius
     defLabel temp_C_right_title(myWidget);
-#ifdef FULLSCREEN
     temp_C_right_title.setGeometry(x, y, column_x, floor(f_title.pointSize()*1.5));
     y += temp_C_right_title.geometry().height() + single_space;
-#else
-    temp_C_right_title.setGeometry(cam_x+cam_width+10, 190, 150, 20);
-#endif
     temp_C_right_title.setText(QObject::trUtf8("Temp (°C):"));
     temp_C_right_title.setFont(f_title);
     temp_C_right_title.setPalette(Pal);
     TempLabel temp_C_right(myWidget);
-#ifdef FULLSCREEN
     temp_C_right.setGeometry(x, y, column_x, floor(f_temp.pointSize()*1.5));
     y += temp_C_right.geometry().height() + section_space;
-#else
-    temp_C_right.setGeometry(cam_x+cam_width+10, 215, 200, 70);
-#endif
     temp_C_right.setText(QObject::trUtf8("---"));
     temp_C_right.setFont(f_temp);
     temp_C_right.setPalette(Pal);
@@ -197,21 +194,13 @@ int main( int argc, char **argv )
 //Label with camera temperature
 /*
     defLabel temp_cam_title(myWidget);
-#ifdef FULLSCREEN
     temp_cam_title.setGeometry(x, y, column_x, f_title.pointSize());
     y += temp_cam_title.geometry().height() + (border/2);
-#else
-    temp_cam_title.setGeometry(cam_x+cam_width+10, 290, 150, 20);
-#endif
     temp_cam_title.setText("Camera:");
     temp_cam_title.setFont(f_title);
     TempLabel temp_cam(myWidget);
-#ifdef FULLSCREEN
     temp_cam.setGeometry(x, y, column_x, f_temp.pointSize());
     y += temp_cam.geometry().height() + (border/2);
-#else
-    temp_cam.setGeometry(cam_x+cam_width+10, 315, 200, 70);
-#endif
     temp_cam.setText(QObject::trUtf8("---"));
     temp_cam.setFont(f_temp);
     //QObject::connect(&myLabel, SIGNAL(enviaLabel(QString)), &temp_right, SLOT(atualizaTemp(QString)));*/
@@ -220,94 +209,58 @@ int main( int argc, char **argv )
 /*
     QPushButton *button3 = new QPushButton(myWidget);
     button3->setText("Telemetry");
-#ifdef FULLSCREEN
     button3->setGeometry(x, y, max_column_sz, 30);
     y += button3->geometry().height() + (border/2);
-#else
-    button3->setGeometry(cam_x+cam_width+10, 390, 100, 30);
-#endif
 
     defLabel telemetry_State(myWidget);
-#ifdef FULLSCREEN
     telemetry_State.setGeometry(x, y, column_x, f_title.pointSize());
     y += telemetry_State.geometry().height() + (border/2);
-#else
-    telemetry_State.setGeometry(cam_x+cam_width+10, 430, 200, 20);
-#endif
     telemetry_State.setText(QObject::trUtf8("Telemetry: ?"));
     telemetry_State.setFont(f_title);*/
 
     defLabel range_State(myWidget);
-#ifdef FULLSCREEN
     range_State.setGeometry(x, y, column_x, floor(f_title.pointSize()*1.5));
     y += range_State.geometry().height() + element_space;
-#else
-    range_State.setGeometry(cam_x+cam_width+10, 550, 200, 20);
-#endif
     range_State.setText(QObject::trUtf8("Range: 20 a 50"));
     range_State.setFont(f_title);
 
     QSlider qs_min_temp(Qt::Horizontal, myWidget);
-#ifdef FULLSCREEN
     qs_min_temp.setGeometry(x, y, max_column_sz, 30);
     y += qs_min_temp.geometry().height() + half_space;
-#else
-    qs_min_temp.setGeometry(cam_x+cam_width+10, 480, 150, 20);
-#endif
     qs_min_temp.setMinimum(15);
     qs_min_temp.setMaximum(50);
     qs_min_temp.setValue(20);
 
     QSlider qs_max_temp(Qt::Horizontal, myWidget);
-#ifdef FULLSCREEN
     qs_max_temp.setGeometry(x, y, max_column_sz, 30);
     y += qs_max_temp.geometry().height() + section_space;
-#else
-    qs_max_temp.setGeometry(cam_x+cam_width+10, 520, 150, 20);
-#endif
     qs_max_temp.setMinimum(15);
     qs_max_temp.setMaximum(50);
     qs_max_temp.setValue(50);
 
 //Change image interpolation
     defLabel interp_title(myWidget);
-#ifdef FULLSCREEN
     interp_title.setGeometry(x, y, column_x, floor(f_title.pointSize()*1.5));
     y += interp_title.geometry().height() + element_space;
-#else
-    interp_title.setGeometry(cam_x+cam_width+10, 190, 150, 20);
-#endif
     interp_title.setText(QObject::trUtf8("Interp.:"));
     interp_title.setFont(f_title);
 
     QComboBox qc_interpolation(myWidget);
-#ifdef FULLSCREEN
     qc_interpolation.setGeometry(x, y, max_column_sz, 30);
     y += qc_interpolation.geometry().height() + section_space;
-#else
-    qc_interpolation.setGeometry(cam_x+cam_width+10, 600, 200, 30);
-#endif
     qc_interpolation.addItem("Cubic");
     qc_interpolation.addItem("Nenhum");
 
 //Change colormap
     defLabel colormap_title(myWidget);
-#ifdef FULLSCREEN
     colormap_title.setGeometry(x, y, column_x, floor(f_title.pointSize()*1.5));
     y += colormap_title.geometry().height() + element_space;
-#else
-    colormap_title.setGeometry(cam_x+cam_width+10, 190, 150, 20);
-#endif
     colormap_title.setText(QObject::trUtf8("Paleta:"));
     colormap_title.setFont(f_title);
 
     QComboBox qc_colormap(myWidget);
-#ifdef FULLSCREEN
     qc_colormap.setGeometry(x, y, max_column_sz, 30);
     y += qc_colormap.geometry().height() + section_space;
-#else
-    qc_colormap.setGeometry(cam_x+cam_width+10, 650, 200, 30);
-#endif
     qc_colormap.addItem("Default");
     qc_colormap.addItem("Hot Blue");
     qc_colormap.addItem("Medic");
@@ -316,17 +269,18 @@ int main( int argc, char **argv )
     qc_colormap.addItem("Tons cinza");
 
     //Close button
-#ifdef FULLSCREEN
     QPushButton *close_button = new QPushButton(myWidget);
     close_button->setText("X");
     close_button->setGeometry(a.desktop()->width()-15, a.desktop()->height()-15, 15, 15);
-#endif
 
     //create a thread to gather SPI data
 	//when the thread emits updateImage, the label should update its image accordingly
     LeptonThread *thread = LeptonThread::Instance();
 	QObject::connect(thread, SIGNAL(updateImage(QImage)), &myLabel, SLOT(setImage(QImage)));
 	
+    QObject::connect(&myLabel, SIGNAL(enviaLevel(int)), &arrow, SLOT(getLevel(int)));
+    QObject::connect(thread, SIGNAL(enviaLevel(int)), &arrow, SLOT(getLevel(int)));
+
     //connect ffc button to the thread's ffc action
     QObject::connect(button1, SIGNAL(clicked()), thread, SLOT(performFFC()));
 
@@ -363,6 +317,7 @@ int main( int argc, char **argv )
     QObject::connect(&qc_interpolation, SIGNAL(currentIndexChanged(int)), thread, SLOT(get_interpolation_method(int)));
 
     QObject::connect(&qc_colormap, SIGNAL(currentIndexChanged(int)), thread, SLOT(change_palette(int)));
+    QObject::connect(&qc_colormap, SIGNAL(currentIndexChanged(int)), &colorbar, SLOT(setPaletteIndex(int)));
 
     QObject::connect(close_button, SIGNAL(clicked()), myWidget, SLOT(close()));
 

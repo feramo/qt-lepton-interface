@@ -161,10 +161,14 @@ void LeptonThread::limit_framebuf()
             minValue = value;
         }*/
         if(value > maxValue) {
-            frameBuffer[i] = (uint16_t) maxValue;
+            lim_frameBuffer[i] = (uint16_t) maxValue;
         }
         else if(value < minValue) {
-            frameBuffer[i] = (uint16_t) minValue;
+            lim_frameBuffer[i] = (uint16_t) minValue;
+        }
+        else
+        {
+            lim_frameBuffer[i] = value;
         }
         column = i % PACKET_SIZE_UINT16 - 2;
         row = i / PACKET_SIZE_UINT16 ;
@@ -182,7 +186,7 @@ void LeptonThread::generate_bw()
         if(i % PACKET_SIZE_UINT16 < 2) {
             continue;
         }
-        frameBW[j] = static_cast<uint8_t>((frameBuffer[i] - minValue) * scale);
+        frameBW[j] = static_cast<uint8_t>((lim_frameBuffer[i] - minValue) * scale);
         j++;
     }
 }
@@ -222,6 +226,7 @@ void LeptonThread::update_point_temp()
     {
         uint32_t pix_temp = (uint32_t) lepton_result_swapped[last_pos_x + 2 + (last_pos_y * 82)];
         pix_temp = (uint32_t) ((pix_temp-a_fact)*b_fact_inv100);
+        emit enviaLevel((int) pix_temp);
         uint8_t temp_integ = pix_temp/100;
         uint8_t temp_dec = pix_temp/10%10;
         uint8_t temp_cent = pix_temp%10;
@@ -250,6 +255,12 @@ void LeptonThread::performFFC() {
 void LeptonThread::get_result(uint16_t* target_result)
 {
     memcpy(target_result, lepton_result_swapped, sizeof(lepton_result_swapped));
+}
+
+void LeptonThread::get_range(uint8_t* range_min, uint8_t* range_max)
+{
+    memcpy(range_min, &min_temp, sizeof(min_temp));
+    memcpy(range_max, &max_temp, sizeof(max_temp));
 }
 
 void LeptonThread::toggleRadiometry()
@@ -282,6 +293,13 @@ void LeptonThread::update_temp_range()
         min_temp = temp_min;
         max_temp = temp_max;
         emit(updateRange(QString("Range: %1 a %2").arg(min_temp).arg(max_temp)));
+        update_point_temp();
+        if(!is_running)
+        {
+            limit_framebuf();
+            generate_bw();
+            update_image();
+        }
     }
 }
 
@@ -365,6 +383,7 @@ void LeptonThread::load_from_file()
             lepton_result_swapped[i] = ftemp;
           }
           raw.close();
+          limit_framebuf();
           generate_bw();
           update_image();
         }

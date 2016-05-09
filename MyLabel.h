@@ -32,6 +32,7 @@ class MyLabel : public QLabel {
     void enviaLabel(QString);
     void enviaLabel_C(QString);
     void enviaMousePos(QPoint);
+    void enviaLevel(int);
 
 private:
   uint16_t frameBuffer[(PACKET_SIZE*PACKETS_PER_FRAME/2)];
@@ -59,6 +60,24 @@ class defLabel : public QLabel {
 
   public slots:
     void writeText(QString);
+};
+
+class ColorBar : public QLabel {
+  Q_OBJECT;
+
+  public:
+    ColorBar(QWidget *parent = 0);
+    ~ColorBar();
+    void setBarHeight(uint16_t height, uint16_t bottom);
+
+  public slots:
+    void setPaletteIndex(int);
+    void getLevel(int);
+
+  private:
+    uint8_t range_min, range_max;
+    uint16_t bar_height, bar_bottom;
+
 };
 
 #endif

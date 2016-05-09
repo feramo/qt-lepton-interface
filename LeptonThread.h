@@ -36,6 +36,7 @@ class LeptonThread : public QThread
 public:
   void run();
   void get_result(uint16_t* target_result);
+  void get_range(uint8_t* range_min, uint8_t* range_max);
   static LeptonThread* Instance();
 
 public slots:
@@ -56,6 +57,7 @@ signals:
   void getCamTemp(int);
   void updateRadiometry(QString);
   void updateRange(QString);
+  void enviaLevel(int);
 
 private:
   LeptonThread();
@@ -75,6 +77,7 @@ private:
 
   QImage myImage;
   uint16_t* frameBuffer;
+  uint16_t lim_frameBuffer[(PACKET_SIZE*PACKETS_PER_FRAME)/2];
   uint8_t lepton_result[PACKET_SIZE*PACKETS_PER_FRAME];
   uint16_t lepton_result_swapped[(PACKET_SIZE*PACKETS_PER_FRAME)/2];
   uint16_t lepton_frames = 100;
